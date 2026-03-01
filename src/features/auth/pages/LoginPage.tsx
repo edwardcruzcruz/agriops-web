@@ -11,9 +11,9 @@ const LoginPage = () => {
         <div className={styles.container}>
             <h2 className={styles.title} >LoginPage</h2>
             {error && (<SharedError 
-                message={error}
-                onRetry={handleLogin}
                 variant='inline'
+                message={error}
+                //onRetry={handleLogin}
             />)}
             <form className={styles.form}
                 onSubmit={(e) => {

@@ -1,8 +1,8 @@
 type errorVariante = "inline" | "page"
 interface SharedErrorProps {
+    variant?: errorVariante;
     message?: string;
     onRetry?: () => void;
-    variant?: errorVariante
 }
 
 const SharedError = ({

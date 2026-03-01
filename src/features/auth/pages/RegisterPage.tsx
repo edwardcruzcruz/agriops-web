@@ -10,9 +10,9 @@ const RegisterPage = () => {
         <h2 className={styles.title}>Register</h2>
         { error && (
             <SharedError 
-            message={error}
-            onRetry={handleRegister}
             variant="inline"
+            //message={error}
+            //onRetry={handleRegister}
             />
         )}
         <form className={styles.form}
