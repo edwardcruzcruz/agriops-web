@@ -5,7 +5,7 @@ Frontend client application for the AgriOps platform, built with <strong>React</
 
 AgriOps Web integrates with the AgriOps Backend API to provide authentication, protected routes, and agricultural operations management features.
 
-This project follows a scalable, domain-driven architecture with clean separation between UI, business logic, and API layers.
+This project follows a scalable, domain-driven architecture with clean separation between UI, business logic, and API layers, now including <strong>Redux Toolkit</strong> for global state management.
 </p>
 
 ---
@@ -14,6 +14,8 @@ This project follows a scalable, domain-driven architecture with clean separatio
 
 - User authentication (Login & Register)
 - Protected routes with token-based access control
+- **Redux Toolkit** state management for auth and registration
+- Typed Redux hooks (`useAppDispatch`, `useAppSelector`) for type-safe state access
 - API abstraction layer for backend communication
 - Custom React hooks for business logic encapsulation
 - Domain-based folder structure (feature-first architecture)
@@ -30,8 +32,10 @@ This project follows a scalable, domain-driven architecture with clean separatio
 - TypeScript (strict mode)
 - Vite
 - Axios
+- Redux Toolkit
 - React Router
 - ESLint
+- Yup
 
 ---
 
@@ -47,6 +51,7 @@ src/
  │    │    ├── hooks/         # useLogin, useRegister
  │    │    ├── interfaces/    # Response & request types
  │    │    ├── pages/         # LoginPage, RegisterPage
+ │    │    ├── store/         # Redux slice(s) for auth   
  │    │    └── validations/   # Form validation schemas
  │    │
  │    └── users/              # User-related domain logic
@@ -63,6 +68,10 @@ src/
  │    ├── Spinner.tsx
  │    ├── SharedError.tsx
  │    └── CustomHeader.tsx
+ │
+ ├── store/                   # Root store configuration
+ │    ├── store.ts            # Redux store combining all slices
+ │    └── hooks.ts            # useAppDispatch & useAppSelector
  │
  ├── App.tsx
  ├── main.tsx
@@ -133,15 +142,47 @@ npm run dev
 
 1. User submits login/register form
 
-2. Frontend validates input using schema validation
+2. Input validated using Yup schemas
 
-3. API request sent to agriOps-backend
+3. Component dispatches Redux async thunk (loginThunk / registerThunk)
 
-4. JWT token stored in localStorage
+4. Thunk calls API (postLogin / postRegister) and returns a response
 
-5. Protected routes validate token presence
+5. Slice updates global Redux state:
 
-6. Authenticated user gains access to secured pages
+- token, loading, error, success
+
+6. Component reads state using typed selector:
+
+```bash
+const { token, loading, error } = useAppSelector(state => state.auth);
+```
+
+7. Navigation is handled in the component/hook:
+
+```bash
+useEffect(() => {
+  if (token) navigate("/dashboard");
+}, [token]);
+```
+
+8. Protected routes (ProtectedRoute.tsx) check token presence in Redux state or localStorage
+
+---
+
+## 🧠 Redux Design Decisions
+
+- ✅ Feature-based slices (authSlice, registerSlice)
+
+- ✅ Typed hooks for dispatch and selector
+
+- ✅ Async thunks encapsulate API calls
+
+- ✅ No navigation in slice — handled by components/hooks
+
+- ✅ Global state managed centrally via store/store.ts
+
+- ✅ Slices modular per feature for scalability
 
 ---
 
@@ -171,7 +212,7 @@ npm run dev
 
 - Global API error interceptor
 
-- Redux for state management
+- Additional feature slices for other domains (users)
 
 - Unit & integration testing (Vitest + Testing Library)
 
