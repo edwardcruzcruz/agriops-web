@@ -16,8 +16,10 @@ bitacoraApi.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
+      const status = error.response.status;
+      const requestUrl = error.config?.url;
       // El servidor respondió con error
-      if (error.response.status === 401) {
+      if (status === 401 && requestUrl !== "/auth/login") {
         localStorage.removeItem("token");
         window.location.href = "/login";
       }
