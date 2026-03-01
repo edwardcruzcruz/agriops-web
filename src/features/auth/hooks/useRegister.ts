@@ -1,23 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { postRegister } from "../actions/post-register.action";
+//import { postRegister } from "../actions/post-register.action";
 import { ValidationError } from 'yup';
 import { registerSchema } from "../validations/register.validation";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { registerThunk } from "../store/register.slice";
 
 const useRegister = () => {
+    const dispatch = useAppDispatch();
+    const { success, loading, error } = useAppSelector(
+        (state) => state.register
+    )
     const navigate = useNavigate();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null)
+    /*const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null)*/
     
     const [validationError, setValidationError] = useState<{
         email?: string,
         password?: string
     }>({})
     const handleRegister = async () => {
-        setLoading(true);
-        setError(null);
+        //setLoading(true);
+        //setError(null);
         setValidationError({});   
         try {
             await registerSchema.validate(
@@ -34,11 +40,11 @@ const useRegister = () => {
                 });
                 setValidationError(errors);
             }
-            setLoading(false);
+            //setLoading(false);
             return;
         }
         
-        try {
+        /*try {
             const response = await postRegister(email,password); 
             console.log(response);
             if(response != null){            
@@ -52,8 +58,16 @@ const useRegister = () => {
             }
         }finally{
             setLoading(false)
-        }
+        }*/
+       dispatch(registerThunk({email,password}));
     } 
+
+    useEffect(() => {
+        if( success ){
+            navigate("/login", { replace: true})
+        }
+    }, [success])
+    
     return {
         email
         ,password
@@ -62,7 +76,6 @@ const useRegister = () => {
         ,validationError
         ,setEmail
         ,setPassword
-        ,setLoading
         ,handleRegister
     };
 }

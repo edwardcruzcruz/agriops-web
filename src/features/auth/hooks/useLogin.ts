@@ -1,24 +1,23 @@
 import { useNavigate } from "react-router-dom";
-import { postLogin } from "../actions/post-login.action";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { loginSchema } from "../validations/login.validation";
 import { ValidationError } from "yup";
-import axios from "axios";
+import { loginThunk } from "../store/auth.slice";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 
 export const useLogin = () => {
+    const dispatch = useAppDispatch();
+    const { token, loading, error } = useAppSelector(
+        (state) => state.auth
+    )
     const navigate = useNavigate();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-
     const [validationErrors, setValidationErrors] = useState<{
         email?: string,
         password?: string
     }>({})
     const handleLogin = async () => {
-        setLoading(true);
-        setError(null);
         setValidationErrors({});
         //form handling error
         try {
@@ -36,27 +35,17 @@ export const useLogin = () => {
                 });
                 setValidationErrors(errors);
             }
-            setLoading(false)
-            return; // stop submission if validation fails
+            return;
         }
-
-        //api handling error
-        try {
-            const data = await postLogin(email,password);
-            localStorage.setItem("token", data.token);
-            navigate("/dashboard")            
-        } catch (error) {
-            if(axios.isAxiosError(error)){
-                //const status = error.response?.status;
-                const message = error.response?.data?.message;
-                setError(message)
-            }else{
-                setError("Something went wrong")
-            }
-        }finally{
-            setLoading(false)
-        }
+        dispatch(loginThunk({email,password}));
     }
+
+    useEffect(() => {
+        if( token ){
+           navigate("/dashboard", { replace: true }) 
+        }
+    }, [token])
+    
     return {
         email
         ,password
