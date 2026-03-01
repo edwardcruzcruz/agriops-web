@@ -3,6 +3,7 @@ import { postLogin } from "../actions/post-login.action";
 import { useState } from "react";
 import { loginSchema } from "../validations/login.validation";
 import { ValidationError } from "yup";
+import axios from "axios";
 
 export const useLogin = () => {
     const navigate = useNavigate();
@@ -45,8 +46,10 @@ export const useLogin = () => {
             localStorage.setItem("token", data.token);
             navigate("/dashboard")            
         } catch (error) {
-            if(error instanceof Error){
-                setError(error.message)
+            if(axios.isAxiosError(error)){
+                //const status = error.response?.status;
+                const message = error.response?.data?.message;
+                setError(message)
             }else{
                 setError("Something went wrong")
             }
