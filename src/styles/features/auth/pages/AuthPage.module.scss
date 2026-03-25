@@ -2,15 +2,27 @@
 @use "../../../mixins" as *;
 
 .container {
-    @include flex-center;   
-    background-color: $neutral-900;
-    color: $neutral-100;
+    @include flex-center;
+    min-height: 100vh; 
+    justify-content: center;
+    padding: 1rem;
+}
+
+.card{
+    width: 100%;
+    max-width: 60vh;
+    background-color: $neutral-700;
+    border: 1px solid $neutral-700;
+    border-radius: $border-radius;
+    padding: 20px;
+    
 }
 
 .title {
-    font-size: 2rem;
+    font-size: 1.5rem;
     margin-bottom: 1.5rem;
-    color: $primary-500;
+    color: $neutral-100;
+    text-align: center
 }
 
 .form 
@@ -20,12 +32,15 @@
 }
 
 .input {
-    width: 300px;
-    padding: 0.5rem;
+    width: 200px;
+    padding: 1rem;
     margin-bottom: 1rem;
     border: 1px solid $neutral-100;
     border-radius: 6px;
     font-size: 1rem;
+
+    background-color: transparent;
+    color: $neutral-100
 }
 
 .button {
@@ -44,4 +59,32 @@
 .error{
     color: $error-500;
     font-size: 0.875 rem;
+}
+
+@media (min-width: $bp-tablet){
+    .card{
+        max-width: 400px;
+        padding: 25px 35px;
+    }
+
+    .title{
+        font-size: 1.7rem;
+    }
+}
+
+@media (min-width: $bp-desktop){
+    .card{
+        max-width: 420px;
+        padding: 30px 40px;
+    }
+
+    .title{
+        font-size: 1.9rem;
+    }
+}
+
+@media (min-width: $bp-large){
+   .card{
+        max-width: 450px;
+   } 
 }
